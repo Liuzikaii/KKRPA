@@ -1,0 +1,69 @@
+{
+    "name": "kkrpa",
+    "version": "0.1.0",
+    "description": "KKRPA - 自动化流程图形化编程平台",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder",
+        "build:win": "electron-builder --win",
+        "build:mac": "electron-builder --mac",
+        "build:linux": "electron-builder --linux"
+    },
+    "build": {
+        "appId": "com.kkrpa.desktop",
+        "productName": "KKRPA",
+        "directories": {
+            "output": "../dist"
+        },
+        "files": [
+            "main.js",
+            "preload.js",
+            "activation.html"
+        ],
+        "extraResources": [
+            {
+                "from": "../backend/dist/kkrpa-server.exe",
+                "to": "backend/kkrpa-server.exe"
+            },
+            {
+                "from": "../frontend/out",
+                "to": "frontend"
+            }
+        ],
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "icon": "icon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": true,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "shortcutName": "KKRPA"
+        },
+        "mac": {
+            "target": [
+                "dmg"
+            ],
+            "icon": "icon.icns"
+        },
+        "linux": {
+            "target": [
+                "AppImage"
+            ],
+            "icon": "icon.png"
+        }
+    },
+    "devDependencies": {
+        "electron": "^33.0.0",
+        "electron-builder": "^25.0.0"
+    }
+}

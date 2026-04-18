@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KKRPA - 激活</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: transparent;
+      color: #e2e8f0;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+
+    .container {
+      width: 500px;
+      margin: 10px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      border-radius: 20px;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background orbs */
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 6s ease-in-out infinite;
+    }
+    .bg-orb-1 { width: 200px; height: 200px; background: #6366f1; top: -50px; right: -50px; }
+    .bg-orb-2 { width: 150px; height: 150px; background: #ec4899; bottom: -30px; left: -30px; animation-delay: -3s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(10px, -10px) scale(1.1); }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+    }
+
+    /* Title bar with close button */
+    .titlebar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 16px;
+      -webkit-app-region: drag;
+    }
+    .close-btn {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: none;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+      transition: opacity 0.2s;
+    }
+    .close-btn:hover { opacity: 0.8; }
+
+    /* Logo */
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo h1 {
+      font-size: 42px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+    .logo p {
+      color: #64748b;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* Edition cards */
+    .editions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .edition-card {
+      padding: 16px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+      -webkit-app-region: no-drag;
+      text-align: center;
+    }
+    .edition-card.community {
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.2);
+    }
+    .edition-card.enterprise {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+    .edition-card:hover {
+      transform: translateY(-2px);
+    }
+    .edition-card.community:hover, .edition-card.community.active {
+      border-color: #22c55e;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15);
+    }
+    .edition-card.enterprise:hover, .edition-card.enterprise.active {
+      border-color: #6366f1;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+    }
+    .edition-icon { font-size: 28px; margin-bottom: 6px; }
+    .edition-title { font-weight: 700; font-size: 15px; }
+    .edition-desc { color: #64748b; font-size: 11px; margin-top: 4px; line-height: 1.4; }
+
+    /* License input */
+    .license-section {
+      margin-bottom: 20px;
+    }
+    .license-section label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .input-group {
+      position: relative;
+    }
+    .license-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid #334155;
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: all 0.3s;
+      -webkit-app-region: no-drag;
+    }
+    .license-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+    .license-input::placeholder {
+      color: #475569;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      -webkit-app-region: no-drag;
+      margin-bottom: 10px;
+    }
+    .btn-activate {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    .btn-activate:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+    .btn-activate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-skip {
+      background: transparent;
+      color: #64748b;
+      border: 1px solid #334155;
+    }
+    .btn-skip:hover {
+      color: #94a3b8;
+      border-color: #475569;
+    }
+
+    /* Status */
+    .status {
+      text-align: center;
+      font-size: 13px;
+      min-height: 20px;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+    .status.error { color: #f87171; }
+    .status.success { color: #4ade80; }
+
+    /* Dev helper */
+    .dev-helper {
+      text-align: center;
+      margin-top: 12px;
+    }
+    .dev-helper button {
+      background: none;
+      border: none;
+      color: #475569;
+      font-size: 11px;
+      cursor: pointer;
+      -webkit-app-region: no-drag;
+      text-decoration: underline;
+    }
+    .dev-helper button:hover { color: #64748b; }
+
+    /* Already activated */
+    .activated-info {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .activated-info .icon { font-size: 48px; margin-bottom: 12px; }
+    .activated-info .text { color: #4ade80; font-weight: 600; font-size: 16px; }
+    .activated-info .edition-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .activated-info .edition-badge.community {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    .activated-info .edition-badge.enterprise {
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+
+    <div class="titlebar">
+      <button class="close-btn" onclick="window.close()"></button>
+    </div>
+
+    <div class="content">
+      <div class="logo">
+        <h1>KKRPA</h1>
+        <p>自动化流程图形化编程平台</p>
+      </div>
+
+      <!-- View: Check status (initial) -->
+      <div id="view-loading" style="text-align:center; padding: 40px 0;">
+        <div class="loading" style="width:24px;height:24px;border-width:3px;"></div>
+        <p style="color:#64748b; margin-top:12px; font-size:13px;">正在启动后端服务...</p>
+      </div>
+
+      <!-- View: Already activated -->
+      <div id="view-activated" style="display:none;">
+        <div class="activated-info">
+          <div class="icon">✅</div>
+          <div class="text">已激活</div>
+          <div id="activated-edition" class="edition-badge community"></div>
+        </div>
+        <button class="btn-primary btn-activate" onclick="proceed()" style="margin-top:24px;">
+          进入 KKRPA
+        </button>
+      </div>
+
+      <!-- View: Activation form -->
+      <div id="view-activate" style="display:none;">
+        <div class="editions">
+          <div class="edition-card community active" onclick="selectEdition('community')" id="card-community">
+            <div class="edition-icon">🌐</div>
+            <div class="edition-title">社区版</div>
+            <div class="edition-desc">免费使用<br/>最多 5 个工作流</div>
+          </div>
+          <div class="edition-card enterprise" onclick="selectEdition('enterprise')" id="card-enterprise">
+            <div class="edition-icon">🏢</div>
+            <div class="edition-title">企业版</div>
+            <div class="edition-desc">无限工作流<br/>Cron 定时调度</div>
+          </div>
+        </div>
+
+        <div id="license-section" class="license-section">
+          <label>激活码 (License Key)</label>
+          <div class="input-group">
+            <input
+              type="text"
+              id="license-input"
+              class="license-input"
+              placeholder="KKRPA-XX-XXXXXXXX-XXXXXXXX"
+              spellcheck="false"
+            />
+          </div>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <button class="btn-primary btn-activate" id="btn-activate" onclick="activate()">
+          激活
+        </button>
+        <button class="btn-primary btn-skip" onclick="skip()">
+          跳过，使用社区版（免费）
+        </button>
+
+        <div class="dev-helper">
+          <button onclick="generateTestKey()">🔑 生成测试激活码</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedEdition = 'community';
+
+    function selectEdition(edition) {
+      selectedEdition = edition;
+      document.getElementById('card-community').classList.toggle('active', edition === 'community');
+      document.getElementById('card-enterprise').classList.toggle('active', edition === 'enterprise');
+    }
+
+    function setStatus(msg, type = '') {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status ' + type;
+    }
+
+    async function checkStatus() {
+      try {
+        const result = await window.kkrpa.checkLicense();
+        if (result.activated && result.edition) {
+          showActivated(result.edition);
+        } else {
+          showActivateForm();
+        }
+      } catch {
+        showActivateForm();
+      }
+    }
+
+    function showActivated(edition) {
+      document.getElementById('view-loading').style.display = 'none';
+      document.getElementById('view-activate').style.display = 'none';
+      document.getElementById('view-activated').style.display = 'block';
+      const badge = document.getElementById('activated-edition');
+      badge.className = 'edition-badge ' + edition;
+      badge.textContent = edition === 'enterprise' ? '🏢 企业版' : '🌐 社区版';
+    }
+
+    function showActivateForm() {
+      document.getElementById('view-loading').style.display = 'none';
+      document.getElementById('view-activated').style.display = 'none';
+      document.getElementById('view-activate').style.display = 'block';
+    }
+
+    async function activate() {
+      const key = document.getElementById('license-input').value.trim();
+      if (!key) {
+        setStatus('请输入激活码', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-activate');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>验证中...';
+
+      try {
+        const result = await window.kkrpa.activateLicense(key);
+        if (result.activated) {
+          setStatus(result.message, 'success');
+          setTimeout(() => proceed(), 1000);
+        } else {
+          setStatus(result.detail || '无效的激活码', 'error');
+          btn.disabled = false;
+          btn.textContent = '激活';
+        }
+      } catch (err) {
+        setStatus('激活失败: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = '激活';
+      }
+    }
+
+    async function skip() {
+      await window.kkrpa.skipActivation();
+      proceed();
+    }
+
+    async function proceed() {
+      await window.kkrpa.proceed();
+    }
+
+    async function generateTestKey() {
+      const result = await window.kkrpa.generateLicense(selectedEdition);
+      if (result.license_key) {
+        document.getElementById('license-input').value = result.license_key;
+        setStatus(`已生成${selectedEdition === 'enterprise' ? '企业版' : '社区版'}测试激活码`, 'success');
+      }
+    }
+
+    // Listen for Enter key on input
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('license-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') activate();
+      });
+    });
+
+    // Start checking after a brief delay (backend needs time)
+    setTimeout(checkStatus, 3000);
+  </script>
+</body>
+</html>
