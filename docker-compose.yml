@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: kkrpa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kkrpa
+      POSTGRES_USER: kkrpa
+      POSTGRES_PASSWORD: kkrpa123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kkrpa"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (Celery Broker + Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: kkrpa-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build: ./backend
+    container_name: kkrpa-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  # Celery Worker
+  celery-worker:
+    build: ./backend
+    container_name: kkrpa-celery-worker
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
+    env_file:
+      - .env.example
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  # Celery Beat (Cron Scheduler)
+  celery-beat:
+    build: ./backend
+    container_name: kkrpa-celery-beat
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app beat --loglevel=info
+    env_file:
+      - .env.example
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  # Next.js Frontend
+  frontend:
+    build: ./frontend
+    container_name: kkrpa-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+
+volumes:
+  postgres_data:
