@@ -1,0 +1,40 @@
+# FastAPI
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# Database (SQLite)
+sqlalchemy==2.0.36
+aiosqlite==0.20.0
+alembic==1.14.1
+
+# Auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.1
+
+# Scheduler (replaces Celery)
+apscheduler==3.10.4
+
+# Validation
+pydantic==2.10.4
+pydantic-settings==2.7.1
+email-validator==2.2.0
+
+# Python Sandbox
+RestrictedPython==7.4
+
+# HTTP client (for HTTP nodes)
+httpx==0.28.1
+
+# Cron
+croniter==6.0.0
+
+# Snowflake ID
+snowflake-id==1.0.2
+
+# Utils
+python-dotenv==1.0.1
+
+# Packaging
+pyinstaller==6.12.0
