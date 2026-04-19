@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { Suspense, useState, useCallback, useEffect } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useWorkflowStore } from '@/lib/store';
@@ -10,7 +10,7 @@ import NodePalette from '@/components/workflow/NodePalette';
 import PropertyPanel from '@/components/workflow/PropertyPanel';
 import Toolbar from '@/components/workflow/Toolbar';
 
-export default function WorkflowEditorPage() {
+function WorkflowEditorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id') || '';
@@ -96,5 +96,17 @@ export default function WorkflowEditorPage() {
         </div>
       </div>
     </ReactFlowProvider>
+  );
+}
+
+export default function WorkflowEditorPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-gray-950">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <WorkflowEditorContent />
+    </Suspense>
   );
 }
